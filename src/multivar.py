@@ -3,6 +3,8 @@ import math
 import itertools
 import numpy as np
 import tabulate
+from scipy.optimize import fsolve
+
 
 
 # solving https://math.stackexchange.com/q/4430779/143884
@@ -64,16 +66,33 @@ def dfz(x, y, z):
     return A * B
 
 
+eps = 1e-3
+table = [['x', 'y', 'z']]
 
 p = math.pi
 interesting_points = {'0': 0, 'pi/2': p/2, 'pi': p, '3pi/2': 3*p/2}
 permutations = itertools.permutations(interesting_points.items(), 3)
-table = [['x', 'y', 'z']]
 for (kx, x), (ky, y), (kz, z) in permutations:
-    # print(f'{x}, {y}, {z}')
     g = np.array([dfx(x, y ,z), dfy(x, y ,z), dfz(x, y ,z)])
-    if np.linalg.norm(g) < 1e-6:
-        print(f'{kx}, {ky}, {kz}')
+    if np.linalg.norm(g) < eps:
         table.append([kx, ky, kz])
+        continue
+    
+
+def gradient(vars):
+    return [dfx(*vars), dfy(*vars), dfz(*vars)]
+
+more_interesting_points = np.arange(0, 2 * math.pi, 0.1)
+more_permutations = itertools.permutations(more_interesting_points, 3)
+for x, y, z in more_permutations:
+
+    solution = fsolve(gradient, (x, y, z))
+    if np.linalg.norm(solution) < eps:
+        table.append(solution)
 
 print(tabulate.tabulate(table[1:], headers=table[0]))
+
+
+
+
+
