@@ -66,7 +66,7 @@ def dfz(x, y, z):
     return A * B
 
 
-eps = 1e-3
+eps = 1e-6
 table = [['x', 'y', 'z']]
 
 p = math.pi
@@ -87,7 +87,7 @@ more_permutations = itertools.permutations(more_interesting_points, 3)
 for x, y, z in more_permutations:
 
     solution = fsolve(gradient, (x, y, z))
-    if np.linalg.norm(solution) < eps:
+    if np.linalg.norm(gradient(solution)) < eps:
         table.append(solution)
 
 print(tabulate.tabulate(table[1:], headers=table[0]))
